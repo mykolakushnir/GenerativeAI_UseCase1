@@ -1,0 +1,257 @@
+Q1:
+Create the endpoint that make a request to the public `REST Countries` API using endpoint https://restcountries.com/v3.1/all. Parse retrieved API response data in JSON to variable/object.
+
+A1:
+Certainly! Below is an example of how you can create an endpoint in a Node.js application that makes a request to the public "REST Countries" API, retrieves data from the endpoint https://restcountries.com/v3.1/all, and parses the JSON response into a JavaScript variable or object:
+
+javascript
+Copy code
+const express = require('express');
+const axios = require('axios');
+
+const app = express();
+const port = 3000; // You can change the port number as needed
+
+// Create an endpoint to fetch data from the REST Countries API
+app.get('/countries', async (req, res) => {
+  try {
+    const response = await axios.get('https://restcountries.com/v3.1/all');
+    const data = response.data; // This will contain the parsed JSON data
+
+    // You can now use the 'data' variable/object as needed in your application
+    
+    // For example, if you want to send the data as a JSON response to the client:
+    res.json(data);
+  } catch (error) {
+    console.error('Error fetching data from the API:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Start the server
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
+In this example:
+
+We're using the Express.js framework to create a simple server.
+
+We import the axios library to make HTTP requests. You may need to install it using npm install axios if you haven't already.
+
+We create an endpoint at /countries that makes a GET request to the REST Countries API using axios.
+
+We handle the response from the API and parse the JSON data into the data variable/object.
+
+You can use the data variable/object as needed in your application. In this example, we send it as a JSON response to the client, but you can process it however you like.
+
+Make sure to adjust the port number and any other configurations as needed for your specific use case.
+
+Q2:
+Create the endpoint that make a request to the public `REST Countries` API using endpoint https://restcountries.com/v3.1/all. Parse retrieved API response data in JSON to variable/object. Use  .Net7.0
+
+A2:
+Certainly! To create an endpoint in a .NET 7.0 application that makes a request to the public "REST Countries" API, retrieves data from the endpoint https://restcountries.com/v3.1/all, and parses the JSON response into a .NET object, you can use the following example using ASP.NET Core:
+
+Create a new ASP.NET Core project using .NET 7.0. You can use Visual Studio or the command line to do this.
+
+In your project, open the Startup.cs file and configure the API endpoint as follows:
+
+csharp
+Copy code
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+namespace RestCountriesApiDemo
+{
+    public class Startup
+    {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddControllers();
+        }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+        }
+    }
+}
+Create a new controller for your API. Right-click on the "Controllers" folder in your project and add a new controller named CountriesController.cs. In this controller, add the logic to make the API request and parse the response:
+csharp
+Copy code
+using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+namespace RestCountriesApiDemo.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class CountriesController : ControllerBase
+    {
+        private readonly HttpClient _httpClient;
+
+        public CountriesController(IHttpClientFactory httpClientFactory)
+        {
+            _httpClient = httpClientFactory.CreateClient();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllCountries()
+        {
+            try
+            {
+                var apiUrl = "https://restcountries.com/v3.1/all";
+                var response = await _httpClient.GetAsync(apiUrl);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return StatusCode((int)response.StatusCode);
+                }
+
+                var contentStream = await response.Content.ReadAsStreamAsync();
+                var countries = await JsonSerializer.DeserializeAsync<object>(contentStream);
+
+                return Ok(countries);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+    }
+}
+In this controller:
+
+We use the IHttpClientFactory to create an HttpClient for making the API request.
+
+The GetAllCountries method sends a GET request to the REST Countries API, reads and parses the JSON response, and returns the parsed data as an object.
+
+Build and run your ASP.NET Core application. You can now access the API endpoint at http://localhost:5000/api/Countries to retrieve data from the REST Countries API.
+Make sure to adjust the error handling and response format according to your application's requirements.
+
+Q3:
+Create the endpoint that make a request to the public `REST Countries` API using endpoint https://restcountries.com/v3.1/all. Parse retrieved API response data in JSON to variable/object. Use  .Net7.0 and webapi project.
+
+A3:
+To create an endpoint in a .NET 7.0 Web API project that makes a request to the public "REST Countries" API, retrieves data from the endpoint https://restcountries.com/v3.1/all, and parses the JSON response into a .NET object, you can follow these steps:
+
+Create a new .NET 7.0 Web API project. You can do this using Visual Studio or the .NET CLI with the following command:
+arduino
+Copy code
+dotnet new webapi -n RestCountriesApiDemo
+Open the Startup.cs file in your project and configure the API endpoint as follows:
+csharp
+Copy code
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+namespace RestCountriesApiDemo
+{
+    public class Startup
+    {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddControllers();
+            services.AddHttpClient();
+        }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseRouting();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+        }
+    }
+}
+Create a new controller for your API. Right-click on the "Controllers" folder in your project and add a new controller named CountriesController.cs. In this controller, add the logic to make the API request and parse the response:
+csharp
+Copy code
+using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+namespace RestCountriesApiDemo.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CountriesController : ControllerBase
+    {
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        public CountriesController(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllCountries()
+        {
+            try
+            {
+                var apiUrl = "https://restcountries.com/v3.1/all";
+                var httpClient = _httpClientFactory.CreateClient();
+
+                var response = await httpClient.GetAsync(apiUrl);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return StatusCode((int)response.StatusCode);
+                }
+
+                var contentStream = await response.Content.ReadAsStreamAsync();
+                var countries = await JsonSerializer.DeserializeAsync<object>(contentStream);
+
+                return Ok(countries);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+    }
+}
+Build and run your .NET 7.0 Web API application. You can now access the API endpoint at https://localhost:5001/api/Countries (or similar, depending on your configuration) to retrieve data from the REST Countries API.
+Make sure to adjust the error handling and response format according to your application's requirements.
