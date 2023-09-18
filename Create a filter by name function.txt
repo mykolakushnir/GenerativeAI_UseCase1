@@ -1,0 +1,107 @@
+Q1:
+Deserialize Json response to DTO object, use .Net7.0
+
+A1:
+To deserialize a JSON response into a DTO (Data Transfer Object) object using .NET 7.0, you can use the System.Text.Json library, which is built into .NET. Here's a step-by-step guide on how to do this:
+
+Define your DTO class that matches the structure of the JSON data. For example:
+csharp
+Copy code
+public class MyDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    // Add other properties as needed
+}
+Make an HTTP request to retrieve the JSON response. You can use libraries like HttpClient to make the request. Here's an example of how to do this:
+csharp
+Copy code
+using System;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main()
+    {
+        // Create an instance of HttpClient (you can also use a typed HttpClient)
+        using var httpClient = new HttpClient();
+
+        // Make the HTTP request to get the JSON response
+        HttpResponseMessage response = await httpClient.GetAsync("https://example.com/api/data");
+
+        // Check if the request was successful
+        if (response.IsSuccessStatusCode)
+        {
+            // Read the JSON response as a string
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+
+            // Deserialize the JSON string into your DTO object
+            MyDto myDto = JsonSerializer.Deserialize<MyDto>(jsonResponse);
+
+            // You can now use myDto as needed
+            Console.WriteLine($"ID: {myDto.Id}");
+            Console.WriteLine($"Name: {myDto.Name}");
+        }
+        else
+        {
+            Console.WriteLine($"HTTP request failed with status code: {response.StatusCode}");
+        }
+    }
+}
+In the code above, replace "https://example.com/api/data" with the actual URL of the API you are making a request to.
+
+Deserialize the JSON response using JsonSerializer.Deserialize<T>(jsonString), where T is your DTO class (MyDto in this example). This will map the JSON data to the properties of your DTO object.
+
+You can then access the properties of the DTO object (myDto in this example) and use the data as needed.
+
+Remember to handle exceptions and errors appropriately in your code, especially when making network requests. Additionally, consider using a more structured approach, such as dependency injection and configuration, for managing your HTTP client and API URLs in a real-world application.
+
+Q2:
+Configure JsonSerializer to deserialize properties and ignore case sensitivity
+
+A2:
+To configure JsonSerializer to deserialize properties while ignoring case sensitivity in .NET, you can use the JsonSerializerOptions class and set the PropertyNamingPolicy property to JsonNamingPolicy.CamelCase and the PropertyNameCaseInsensitive property to true. Here's how you can do it:
+
+csharp
+Copy code
+using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+public class MyDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+class Program
+{
+    static void Main()
+    {
+        string json = "{\"id\": 1, \"name\": \"John Doe\"}";
+
+        JsonSerializerOptions options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // Convert JSON properties to camelCase
+            PropertyNameCaseInsensitive = true // Ignore case sensitivity when deserializing
+        };
+
+        MyDto myDto = JsonSerializer.Deserialize<MyDto>(json, options);
+
+        Console.WriteLine($"ID: {myDto.Id}");
+        Console.WriteLine($"Name: {myDto.Name}");
+    }
+}
+In this example:
+
+We define a MyDto class that matches the structure of the JSON data, with properties named in PascalCase (Id and Name).
+
+We create a JsonSerializerOptions object called options and configure it as follows:
+
+PropertyNamingPolicy is set to JsonNamingPolicy.CamelCase, which converts JSON properties to camelCase. This ensures that JSON properties with different casing styles (e.g., "id" in JSON and Id in the class) are correctly matched during deserialization.
+PropertyNameCaseInsensitive is set to true, which allows the deserializer to ignore the case sensitivity when matching JSON property names with class property names.
+We then use JsonSerializer.Deserialize<MyDto>(json, options) to deserialize the JSON string into a MyDto object while applying the specified options.
+
+This configuration will enable you to deserialize JSON data with different casing styles (e.g., camelCase, PascalCase, or any mix of cases) while ensuring that the deserialization process is case-insensitive.
