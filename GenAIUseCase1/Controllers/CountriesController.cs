@@ -44,6 +44,9 @@ namespace GenAIUseCase1.Controllers {
 				//var d1 = FilterCountryByPopulation(countries, 10).ToList();
 				//var d2 = FilterCountryByPopulation(countries, 50).ToList();
 				
+				//var f1 = SortCountryByName(countries, "ascend").ToList();
+				//var f2 = SortCountryByName(countries, "descend").ToList();
+				
 				return Ok(countries);
 			}
 			catch (Exception ex) {
@@ -65,6 +68,28 @@ namespace GenAIUseCase1.Controllers {
 			return filteredCountries;
 		}
 
+		private IEnumerable<Country> SortCountryByName(List<Country> countries, string sortOrder) {
+			var ascSort = "ascend";
+			var descSort = "descend";
+
+			if (!string.IsNullOrEmpty(sortOrder))
+			{
+				if (sortOrder.ToLower().Equals(ascSort))
+				{
+					// ascend sort
+					return countries.OrderBy(x => x.Name.Common);
+				}
+
+				if (sortOrder.ToLower().Equals(descSort))
+				{
+					// descend sort
+					return countries.OrderByDescending(x => x.Name.Common);
+				}
+			}
+			
+			// leave countries unsorted
+			return countries;
+		}
 	}
 
 
