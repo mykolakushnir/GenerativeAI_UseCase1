@@ -36,17 +36,21 @@ namespace GenAIUseCase1.Controllers {
 				var contentStream = await response.Content.ReadAsStreamAsync();
 				var countries = await JsonSerializer.DeserializeAsync<List<Country>>(contentStream, options);
 
-				//var c1 = FilterCountryByName(countries, "UK").ToList();
-				//var c2 = FilterCountryByName(countries, "ST").ToList();
-				//var c3 = FilterCountryByName(countries, "sp").ToList();
+				//var c1 = FilterCountriesByName(countries, "UK").ToList();
+				//var c2 = FilterCountriesByName(countries, "ST").ToList();
+				//var c3 = FilterCountriesByName(countries, "sp").ToList();
+
+
+				//var d1 = FilterCountriesByPopulation(countries, 10).ToList();
+				//var d2 = FilterCountriesByPopulation(countries, 50).ToList();
+
+				//var f1 = SortCountriesByName(countries, "ascend").ToList();
+				//var f2 = SortCountriesByName(countries, "descend").ToList();
 				
-				
-				//var d1 = FilterCountryByPopulation(countries, 10).ToList();
-				//var d2 = FilterCountryByPopulation(countries, 50).ToList();
-				
-				//var f1 = SortCountryByName(countries, "ascend").ToList();
-				//var f2 = SortCountryByName(countries, "descend").ToList();
-				
+				//var g1 = GetCountriesByPageLimit(countries, 10).ToList();
+				//var g2 = GetCountriesByPageLimit(countries, 1).ToList();
+				//var g3 = GetCountriesByPageLimit(countries, 0).ToList();
+
 				return Ok(countries);
 			}
 			catch (Exception ex) {
@@ -54,13 +58,13 @@ namespace GenAIUseCase1.Controllers {
 			}
 		}
 
-		private IEnumerable<Country> FilterCountryByName(List<Country> countries, string countryName) {
+		private IEnumerable<Country> FilterCountriesByName(List<Country> countries, string countryName) {
 			var nameFilter = countryName.ToLower();
 			var filteredCountries = countries.Where(x => x.Name.Common.ToLower().Contains(nameFilter));
 			return filteredCountries;
 		}
 
-		private IEnumerable<Country> FilterCountryByPopulation(List<Country> countries, int population) {
+		private IEnumerable<Country> FilterCountriesByPopulation(List<Country> countries, int population) {
 			int multiplier = 1000000;
 
 			var populationFilter = population * multiplier;
@@ -68,7 +72,7 @@ namespace GenAIUseCase1.Controllers {
 			return filteredCountries;
 		}
 
-		private IEnumerable<Country> SortCountryByName(List<Country> countries, string sortOrder) {
+		private IEnumerable<Country> SortCountriesByName(List<Country> countries, string sortOrder) {
 			var ascSort = "ascend";
 			var descSort = "descend";
 
@@ -89,6 +93,12 @@ namespace GenAIUseCase1.Controllers {
 			
 			// leave countries unsorted
 			return countries;
+		}
+
+		private IEnumerable<Country> GetCountriesByPageLimit(List<Country> countries, int pageLimit)
+		{
+			var filteredCountries = countries.Take(pageLimit);
+			return filteredCountries;
 		}
 	}
 
