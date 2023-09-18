@@ -17,7 +17,7 @@ namespace GenAIUseCase1.Controllers {
 		}
 
 		[HttpGet("GetAllCountries")]
-		public async Task<IActionResult> GetAllCountries(string countryName = "", string countryPopulation = "", string sortType = "", int limit = 0)
+		public async Task<IActionResult> GetAllCountries(string countryName = "", int countryPopulation = 0, string sortType = "", int limit = 0)
 		{
 			try {
 				var apiUrl = "https://restcountries.com/v3.1/all";
@@ -40,6 +40,10 @@ namespace GenAIUseCase1.Controllers {
 				//var c2 = FilterCountryByName(countries, "ST").ToList();
 				//var c3 = FilterCountryByName(countries, "sp").ToList();
 				
+				
+				//var d1 = FilterCountryByPopulation(countries, 10).ToList();
+				//var d2 = FilterCountryByPopulation(countries, 50).ToList();
+				
 				return Ok(countries);
 			}
 			catch (Exception ex) {
@@ -48,8 +52,16 @@ namespace GenAIUseCase1.Controllers {
 		}
 
 		private IEnumerable<Country> FilterCountryByName(List<Country> countries, string countryName) {
-			var filter = countryName.ToLower();
-			var filteredCountries = countries.Where(x => x.Name.Common.ToLower().Contains(filter));
+			var nameFilter = countryName.ToLower();
+			var filteredCountries = countries.Where(x => x.Name.Common.ToLower().Contains(nameFilter));
+			return filteredCountries;
+		}
+
+		private IEnumerable<Country> FilterCountryByPopulation(List<Country> countries, int population) {
+			int multiplier = 1000000;
+
+			var populationFilter = population * multiplier;
+			var filteredCountries = countries.Where(x => x.Population < populationFilter);
 			return filteredCountries;
 		}
 
