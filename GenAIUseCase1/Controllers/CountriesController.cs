@@ -35,23 +35,34 @@ namespace GenAIUseCase1.Controllers {
 
 				var contentStream = await response.Content.ReadAsStreamAsync();
 				var countries = await JsonSerializer.DeserializeAsync<List<Country>>(contentStream, options);
-
-				//var c1 = FilterCountriesByName(countries, "UK").ToList();
-				//var c2 = FilterCountriesByName(countries, "ST").ToList();
-				//var c3 = FilterCountriesByName(countries, "sp").ToList();
-
-
-				//var d1 = FilterCountriesByPopulation(countries, 10).ToList();
-				//var d2 = FilterCountriesByPopulation(countries, 50).ToList();
-
-				//var f1 = SortCountriesByName(countries, "ascend").ToList();
-				//var f2 = SortCountriesByName(countries, "descend").ToList();
 				
-				//var g1 = GetCountriesByPageLimit(countries, 10).ToList();
-				//var g2 = GetCountriesByPageLimit(countries, 1).ToList();
-				//var g3 = GetCountriesByPageLimit(countries, 0).ToList();
+				var filteredCountries = new List<Country>();
+				if (countries != null)
+				{
+					filteredCountries.AddRange(countries);
 
-				return Ok(countries);
+					// apply countries filtering by name
+					if (!string.IsNullOrEmpty(countryName)) {
+						filteredCountries = FilterCountriesByName(filteredCountries, countryName).ToList();
+					}
+
+					// apply countries filtering by population
+					if (!string.IsNullOrEmpty(countryName)) {
+						filteredCountries = FilterCountriesByPopulation(filteredCountries, countryPopulation).ToList();
+					}
+
+					// apply page limitation
+					if (!string.IsNullOrEmpty(countryName)) {
+						filteredCountries = GetCountriesByPageLimit(filteredCountries, limit).ToList();
+					}
+
+					// apply sorting
+					if (!string.IsNullOrEmpty(countryName)) {
+						filteredCountries = SortCountriesByName(filteredCountries, sortType).ToList();
+					}
+				}
+				
+				return Ok(filteredCountries);
 			}
 			catch (Exception ex) {
 				return StatusCode(500, ex.Message);
@@ -76,21 +87,16 @@ namespace GenAIUseCase1.Controllers {
 			var ascSort = "ascend";
 			var descSort = "descend";
 
-			if (!string.IsNullOrEmpty(sortOrder))
-			{
-				if (sortOrder.ToLower().Equals(ascSort))
-				{
-					// ascend sort
-					return countries.OrderBy(x => x.Name.Common);
-				}
-
-				if (sortOrder.ToLower().Equals(descSort))
-				{
-					// descend sort
-					return countries.OrderByDescending(x => x.Name.Common);
-				}
+			if (sortOrder.ToLower().Equals(ascSort)) {
+				// ascend sort
+				return countries.OrderBy(x => x.Name.Common);
 			}
-			
+
+			if (sortOrder.ToLower().Equals(descSort)) {
+				// descend sort
+				return countries.OrderByDescending(x => x.Name.Common);
+			}
+
 			// leave countries unsorted
 			return countries;
 		}
