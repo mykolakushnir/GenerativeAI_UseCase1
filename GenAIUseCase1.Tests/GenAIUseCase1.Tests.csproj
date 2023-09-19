@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<ProjectGuid>ab3b8588-f162-4475-bfb9-d23b01729964</ProjectGuid>
+		<TargetFramework>net7.0</TargetFramework>
+		<RootNamespace>GenAIUseCase1.Tests</RootNamespace>
+		<AssemblyName>GenAIUseCase1.Tests</AssemblyName>
+		<OutputType>Library</OutputType>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
+		<PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\GenAIUseCase1\GenAIUseCase1.csproj" />
+	</ItemGroup>
+
+</Project>

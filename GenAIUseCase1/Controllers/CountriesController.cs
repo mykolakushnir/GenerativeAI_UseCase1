@@ -1,7 +1,8 @@
 ﻿using GenAIUseCase1.DTO;
+using GenAIUseCase1.Helpers;
+using GenAIUseCase1.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using System.Xml.Linq;
 
 namespace GenAIUseCase1.Controllers {
 
@@ -10,10 +11,17 @@ namespace GenAIUseCase1.Controllers {
 	public class CountriesController : ControllerBase {
 
 		private readonly IHttpClientFactory _httpClientFactory;
+		private readonly ICountryDataFilter _countryDataFilter;
 
-		public CountriesController(IHttpClientFactory httpClientFactory)
+		public CountriesController(IHttpClientFactory httpClientFactory) : this (httpClientFactory, new CountryDataFilter())
+		{
+			
+		}
+
+		internal CountriesController(IHttpClientFactory httpClientFactory, ICountryDataFilter countryDataFilter)
 		{
 			_httpClientFactory = httpClientFactory;
+			_countryDataFilter = countryDataFilter;
 		}
 
 		[HttpGet("GetAllCountries")]
@@ -43,22 +51,22 @@ namespace GenAIUseCase1.Controllers {
 
 					// apply countries filtering by name
 					if (!string.IsNullOrEmpty(countryName)) {
-						filteredCountries = FilterCountriesByName(filteredCountries, countryName).ToList();
+						filteredCountries = _countryDataFilter.GetCountriesByName(filteredCountries, countryName).ToList();
 					}
 
 					// apply countries filtering by population
 					if (!string.IsNullOrEmpty(countryName)) {
-						filteredCountries = FilterCountriesByPopulation(filteredCountries, countryPopulation).ToList();
+						filteredCountries = _countryDataFilter.GetCountriesByPopulation(filteredCountries, countryPopulation).ToList();
 					}
 
 					// apply page limitation
 					if (!string.IsNullOrEmpty(countryName)) {
-						filteredCountries = GetCountriesByPageLimit(filteredCountries, limit).ToList();
+						filteredCountries = _countryDataFilter.GetCountriesByPageLimit(filteredCountries, limit).ToList();
 					}
 
 					// apply sorting
 					if (!string.IsNullOrEmpty(countryName)) {
-						filteredCountries = SortCountriesByName(filteredCountries, sortType).ToList();
+						filteredCountries = _countryDataFilter.SortCountriesByName(filteredCountries, sortType).ToList();
 					}
 				}
 				
@@ -69,43 +77,7 @@ namespace GenAIUseCase1.Controllers {
 			}
 		}
 
-		private IEnumerable<Country> FilterCountriesByName(List<Country> countries, string countryName) {
-			var nameFilter = countryName.ToLower();
-			var filteredCountries = countries.Where(x => x.Name.Common.ToLower().Contains(nameFilter));
-			return filteredCountries;
-		}
-
-		private IEnumerable<Country> FilterCountriesByPopulation(List<Country> countries, int population) {
-			int multiplier = 1000000;
-
-			var populationFilter = population * multiplier;
-			var filteredCountries = countries.Where(x => x.Population < populationFilter);
-			return filteredCountries;
-		}
-
-		private IEnumerable<Country> SortCountriesByName(List<Country> countries, string sortOrder) {
-			var ascSort = "ascend";
-			var descSort = "descend";
-
-			if (sortOrder.ToLower().Equals(ascSort)) {
-				// ascend sort
-				return countries.OrderBy(x => x.Name.Common);
-			}
-
-			if (sortOrder.ToLower().Equals(descSort)) {
-				// descend sort
-				return countries.OrderByDescending(x => x.Name.Common);
-			}
-
-			// leave countries unsorted
-			return countries;
-		}
-
-		private IEnumerable<Country> GetCountriesByPageLimit(List<Country> countries, int pageLimit)
-		{
-			var filteredCountries = countries.Take(pageLimit);
-			return filteredCountries;
-		}
+		
 	}
 
 
