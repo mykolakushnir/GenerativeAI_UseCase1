@@ -1,12 +1,88 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using GenAIUseCase1.Controllers;
+using System.Net.Http;
 using GenAIUseCase1.DTO;
 using GenAIUseCase1.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using System.Text.Json;
+using System.Threading.Tasks;
+using System.Threading;
+using GenAIUseCase1.Interfaces;
 
 namespace GenAIUseCase1.Tests {
+
 	[TestClass]
 	public class CountriesTests {
+
+		private CountriesController _controller;
+		private Mock<IHttpClientFactory> _httpClientFactoryMock;
+		private Mock<IHttpClientService> _httpClientServiceMock;
+
+		[TestInitialize]
+		public void Setup()
+		{
+			_httpClientFactoryMock = new Mock<IHttpClientFactory>();
+			_httpClientServiceMock = new Mock<IHttpClientService>();
+			ICountryDataFilter dataFilter = new CountryDataFilter();
+
+			_controller = new CountriesController(_httpClientFactoryMock.Object, _httpClientServiceMock.Object, dataFilter);
+		}
+
+		#region Countries Controller Tests
+
+		[TestMethod]
+		public async Task GetAllCountries_SuccessfulResponse_ReturnsFilteredCountries() {
+			// Arrange
+			var countries = new List<Country>
+			{
+				new() {Name = new CountryName {Common = "CountryA"}, Population = 10000000},
+				new() {Name = new CountryName {Common = "CountryB"}, Population = 20000000},
+				new() {Name = new CountryName {Common = "CountryC"}, Population = 30000000},
+			};
+
+			_httpClientServiceMock
+				.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+				.ReturnsAsync(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.OK,
+					Content = new StringContent(JsonSerializer.Serialize(countries)),
+				});
+
+			// Act
+			var response = await _controller.GetAllCountries("Country", 1500000, "ascend", 2) as OkObjectResult;
+			var result = response.Value as List<Country>;
+			
+			// Assert
+			Assert.IsNotNull(result);
+			Assert.AreEqual(2, result.Count);
+			Assert.AreEqual("CountryA", result[0].Name.Common);
+			Assert.AreEqual("CountryB", result[1].Name.Common);
+		}
+
+		[TestMethod]
+		public async Task GetAllCountries_UnsuccessfulResponse_ReturnsStatusCode() {
+			// Arrange
+			_httpClientServiceMock
+				.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+				.ReturnsAsync(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.InternalServerError,
+					Content = new StringContent("Internal Server Error"),
+				});
+			
+			// Act
+			var response = await _controller.GetAllCountries() as StatusCodeResult;
+
+			// Assert
+			Assert.IsNotNull(response);
+			Assert.AreEqual(500, response.StatusCode);
+		}
+
+		#endregion
 
 		#region Get Countries By Name Tests
 
@@ -58,9 +134,9 @@ namespace GenAIUseCase1.Tests {
 			// Arrange
 			var countries = new List<Country>
 			{
-				new() {Name = new CountryName {Common = "CountryA"}, Population = 5_000_000},
-				new() {Name = new CountryName {Common = "CountryB"}, Population = 10_000_000},
-				new() {Name = new CountryName {Common = "CountryC"}, Population = 20_000_000},
+				new() {Name = new CountryName {Common = "CountryA"}, Population = 5000000},
+				new() {Name = new CountryName {Common = "CountryB"}, Population = 10000000},
+				new() {Name = new CountryName {Common = "CountryC"}, Population = 20000000},
 			};
 			var populationThreshold = 15; // This corresponds to 15 million people
 
@@ -79,8 +155,8 @@ namespace GenAIUseCase1.Tests {
 			// Arrange
 			var countries = new List<Country>
 			{
-				new() {Name = new CountryName {Common = "CountryX"}, Population = 8_000_000},
-				new() {Name = new CountryName {Common = "CountryY"}, Population = 12_000_000},
+				new() {Name = new CountryName {Common = "CountryX"}, Population = 8000000},
+				new() {Name = new CountryName {Common = "CountryY"}, Population = 12000000},
 			};
 			var populationThreshold = 5; // This corresponds to 5 million people
 

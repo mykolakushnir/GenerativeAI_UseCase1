@@ -1,0 +1,455 @@
+Q1:
+Create Unit tests for this method:
+internal IEnumerable<Country> FilterCountriesByName(List<Country> countries, string countryName) {
+			var nameFilter = countryName.ToLower();
+			var filteredCountries = countries.Where(x => x.Name.Common.ToLower().Contains(nameFilter));
+			return filteredCountries;
+		}
+
+A1:
+o create unit tests for the FilterCountriesByName method, you can use a testing framework like MSTest, NUnit, or xUnit. Below, I'll provide an example of how to write unit tests using MSTest. Make sure to add the MSTest NuGet package to your project if you haven't already.
+
+First, you need to create a test project in your solution if you haven't already. Then, add a test class and write test methods to cover different scenarios for the FilterCountriesByName method.
+
+Here's an example of how you can write MSTest unit tests for the FilterCountriesByName method:
+
+csharp
+Copy code
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public class CountryFilterTests
+{
+    [TestMethod]
+    public void FilterCountriesByName_WhenMatchingCountryExists_ShouldReturnFilteredCountries()
+    {
+        // Arrange
+        var countries = new List<Country>
+        {
+            new Country { Name = new Name { Common = "United States of America" } },
+            new Country { Name = new Name { Common = "Canada" } },
+            new Country { Name = new Name { Common = "United Kingdom" } },
+        };
+        var countryName = "United";
+
+        // Act
+        var filteredCountries = FilterCountriesByName(countries, countryName).ToList();
+
+        // Assert
+        Assert.AreEqual(2, filteredCountries.Count);
+        Assert.IsTrue(filteredCountries.Any(c => c.Name.Common == "United States of America"));
+        Assert.IsTrue(filteredCountries.Any(c => c.Name.Common == "United Kingdom"));
+    }
+
+    [TestMethod]
+    public void FilterCountriesByName_WhenNoMatchingCountryExists_ShouldReturnEmptyList()
+    {
+        // Arrange
+        var countries = new List<Country>
+        {
+            new Country { Name = new Name { Common = "Germany" } },
+            new Country { Name = new Name { Common = "France" } },
+        };
+        var countryName = "Spain";
+
+        // Act
+        var filteredCountries = FilterCountriesByName(countries, countryName).ToList();
+
+        // Assert
+        Assert.AreEqual(0, filteredCountries.Count);
+    }
+}
+In this example, we have two test methods:
+
+FilterCountriesByName_WhenMatchingCountryExists_ShouldReturnFilteredCountries: This test checks if the method returns the expected filtered countries when there are matches.
+FilterCountriesByName_WhenNoMatchingCountryExists_ShouldReturnEmptyList: This test checks if the method returns an empty list when there are no matches.
+Make sure to adapt the test data and assertions to your specific requirements. You can add more test methods to cover additional scenarios as needed.
+
+Q2:
+Create Unit tests for this method:
+public IEnumerable<Country> GetCountriesByPopulation(List<Country> countries, int population)
+		{
+			int multiplier = 1000000;
+
+			var populationFilter = population * multiplier;
+			var filteredCountries = countries.Where(x => x.Population < populationFilter);
+			return filteredCountries;
+		}
+		
+A2:
+To create unit tests for the GetCountriesByPopulation method, you can use a testing framework like MSTest, NUnit, or xUnit. Below, I'll provide an example of how to write unit tests using MSTest.
+
+First, create a test project in your solution if you haven't already. Then, add a test class and write test methods to cover different scenarios for the GetCountriesByPopulation method.
+
+Here's an example of how you can write MSTest unit tests for the GetCountriesByPopulation method:
+
+csharp
+Copy code
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public class CountryPopulationFilterTests
+{
+    [TestMethod]
+    public void GetCountriesByPopulation_WhenMatchingCountriesExist_ShouldReturnFilteredCountries()
+    {
+        // Arrange
+        var countries = new List<Country>
+        {
+            new Country { Name = "CountryA", Population = 5_000_000 },
+            new Country { Name = "CountryB", Population = 10_000_000 },
+            new Country { Name = "CountryC", Population = 20_000_000 }
+        };
+        var populationThreshold = 15; // This corresponds to 15 million people
+
+        // Act
+        var filteredCountries = GetCountriesByPopulation(countries, populationThreshold).ToList();
+
+        // Assert
+        Assert.AreEqual(2, filteredCountries.Count);
+        CollectionAssert.Contains(filteredCountries, countries[0]); // CountryA
+        CollectionAssert.Contains(filteredCountries, countries[1]); // CountryB
+    }
+
+    [TestMethod]
+    public void GetCountriesByPopulation_WhenNoMatchingCountriesExist_ShouldReturnEmptyList()
+    {
+        // Arrange
+        var countries = new List<Country>
+        {
+            new Country { Name = "CountryX", Population = 8_000_000 },
+            new Country { Name = "CountryY", Population = 12_000_000 }
+        };
+        var populationThreshold = 25; // This corresponds to 25 million people
+
+        // Act
+        var filteredCountries = GetCountriesByPopulation(countries, populationThreshold).ToList();
+
+        // Assert
+        Assert.AreEqual(0, filteredCountries.Count);
+    }
+}
+In this example, we have two test methods:
+
+GetCountriesByPopulation_WhenMatchingCountriesExist_ShouldReturnFilteredCountries: This test checks if the method returns the expected filtered countries when there are matches.
+
+GetCountriesByPopulation_WhenNoMatchingCountriesExist_ShouldReturnEmptyList: This test checks if the method returns an empty list when there are no matches.
+
+You can adapt the test data, population thresholds, and assertions to your specific requirements. Add more test methods to cover additional scenarios if needed.		
+
+Q3:
+Create Unit tests for this method:
+public IEnumerable<Country> SortCountriesByName(List<Country> countries, string sortOrder)
+		{
+			var ascSort = "ascend";
+			var descSort = "descend";
+
+			if (sortOrder.ToLower().Equals(ascSort)) {
+				// ascend sort
+				return countries.OrderBy(x => x.Name.Common);
+			}
+
+			if (sortOrder.ToLower().Equals(descSort)) {
+				// descend sort
+				return countries.OrderByDescending(x => x.Name.Common);
+			}
+
+			// leave countries unsorted
+			return countries;
+		}
+
+A3:
+To create unit tests for the SortCountriesByName method, you can use a testing framework like MSTest, NUnit, or xUnit. Below, I'll provide an example of how to write unit tests using MSTest.
+
+First, create a test project in your solution if you haven't already. Then, add a test class and write test methods to cover different scenarios for the SortCountriesByName method.
+
+Here's an example of how you can write MSTest unit tests for the SortCountriesByName method:
+
+csharp
+Copy code
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public class CountrySortTests
+{
+    [TestMethod]
+    public void SortCountriesByName_WhenSortOrderIsAscending_ShouldSortCountriesInAscendingOrder()
+    {
+        // Arrange
+        var countries = new List<Country>
+        {
+            new Country { Name = new Name { Common = "Germany" } },
+            new Country { Name = new Name { Common = "France" } },
+            new Country { Name = new Name { Common = "Spain" } }
+        };
+        var sortOrder = "ascend";
+
+        // Act
+        var sortedCountries = SortCountriesByName(countries, sortOrder).ToList();
+
+        // Assert
+        Assert.AreEqual(3, sortedCountries.Count);
+        Assert.AreEqual("France", sortedCountries[0].Name.Common);
+        Assert.AreEqual("Germany", sortedCountries[1].Name.Common);
+        Assert.AreEqual("Spain", sortedCountries[2].Name.Common);
+    }
+
+    [TestMethod]
+    public void SortCountriesByName_WhenSortOrderIsDescending_ShouldSortCountriesInDescendingOrder()
+    {
+        // Arrange
+        var countries = new List<Country>
+        {
+            new Country { Name = new Name { Common = "Germany" } },
+            new Country { Name = new Name { Common = "France" } },
+            new Country { Name = new Name { Common = "Spain" } }
+        };
+        var sortOrder = "descend";
+
+        // Act
+        var sortedCountries = SortCountriesByName(countries, sortOrder).ToList();
+
+        // Assert
+        Assert.AreEqual(3, sortedCountries.Count);
+        Assert.AreEqual("Spain", sortedCountries[0].Name.Common);
+        Assert.AreEqual("Germany", sortedCountries[1].Name.Common);
+        Assert.AreEqual("France", sortedCountries[2].Name.Common);
+    }
+
+    [TestMethod]
+    public void SortCountriesByName_WhenSortOrderIsInvalid_ShouldLeaveCountriesUnsorted()
+    {
+        // Arrange
+        var countries = new List<Country>
+        {
+            new Country { Name = new Name { Common = "Germany" } },
+            new Country { Name = new Name { Common = "France" } },
+            new Country { Name = new Name { Common = "Spain" } }
+        };
+        var sortOrder = "invalidSortOrder";
+
+        // Act
+        var sortedCountries = SortCountriesByName(countries, sortOrder).ToList();
+
+        // Assert
+        CollectionAssert.AreEqual(countries, sortedCountries);
+    }
+}
+In this example, we have three test methods:
+
+SortCountriesByName_WhenSortOrderIsAscending_ShouldSortCountriesInAscendingOrder: This test checks if the method correctly sorts countries in ascending order when the sortOrder parameter is set to "ascend."
+
+SortCountriesByName_WhenSortOrderIsDescending_ShouldSortCountriesInDescendingOrder: This test checks if the method correctly sorts countries in descending order when the sortOrder parameter is set to "descend."
+
+SortCountriesByName_WhenSortOrderIsInvalid_ShouldLeaveCountriesUnsorted: This test checks if the method leaves the countries unsorted when the sortOrder parameter is an invalid value.
+
+You can adapt the test data, sort orders, and assertions to your specific requirements. Add more test methods to cover additional scenarios if needed.
+
+
+Q4:
+Create Unit tests for this method:
+public IEnumerable<Country> GetCountriesByPageLimit(List<Country> countries, int pageLimit)
+		{
+			var filteredCountries = countries.Take(pageLimit);
+			return filteredCountries;
+		}
+
+A4:
+To create unit tests for the GetCountriesByPageLimit method, you can use a testing framework like MSTest, NUnit, or xUnit. Below, I'll provide an example of how to write unit tests using MSTest.
+
+First, create a test project in your solution if you haven't already. Then, add a test class and write test methods to cover different scenarios for the GetCountriesByPageLimit method.
+
+Here's an example of how you can write MSTest unit tests for the GetCountriesByPageLimit method:
+
+csharp
+Copy code
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public class CountryPaginationTests
+{
+    [TestMethod]
+    public void GetCountriesByPageLimit_WhenPageLimitIsGreaterThanCount_ShouldReturnAllCountries()
+    {
+        // Arrange
+        var countries = new List<Country>
+        {
+            new Country { Name = new Name { Common = "CountryA" } },
+            new Country { Name = new Name { Common = "CountryB" } },
+            new Country { Name = new Name { Common = "CountryC" } }
+        };
+        var pageLimit = 5; // Page limit greater than the number of countries
+
+        // Act
+        var filteredCountries = GetCountriesByPageLimit(countries, pageLimit).ToList();
+
+        // Assert
+        CollectionAssert.AreEqual(countries, filteredCountries);
+    }
+
+    [TestMethod]
+    public void GetCountriesByPageLimit_WhenPageLimitIsLessThanCount_ShouldReturnLimitedNumberOfCountries()
+    {
+        // Arrange
+        var countries = new List<Country>
+        {
+            new Country { Name = new Name { Common = "CountryA" } },
+            new Country { Name = new Name { Common = "CountryB" } },
+            new Country { Name = new Name { Common = "CountryC" } }
+        };
+        var pageLimit = 2; // Page limit less than the number of countries
+
+        // Act
+        var filteredCountries = GetCountriesByPageLimit(countries, pageLimit).ToList();
+
+        // Assert
+        Assert.AreEqual(2, filteredCountries.Count);
+        Assert.AreEqual("CountryA", filteredCountries[0].Name.Common);
+        Assert.AreEqual("CountryB", filteredCountries[1].Name.Common);
+    }
+
+    [TestMethod]
+    public void GetCountriesByPageLimit_WhenPageLimitIsZero_ShouldReturnEmptyList()
+    {
+        // Arrange
+        var countries = new List<Country>
+        {
+            new Country { Name = new Name { Common = "CountryA" } },
+            new Country { Name = new Name { Common = "CountryB" } }
+        };
+        var pageLimit = 0; // Page limit is zero
+
+        // Act
+        var filteredCountries = GetCountriesByPageLimit(countries, pageLimit).ToList();
+
+        // Assert
+        Assert.AreEqual(0, filteredCountries.Count);
+    }
+}
+In this example, we have three test methods:
+
+GetCountriesByPageLimit_WhenPageLimitIsGreaterThanCount_ShouldReturnAllCountries: This test checks if the method returns all countries when the pageLimit parameter is greater than the number of countries.
+
+GetCountriesByPageLimit_WhenPageLimitIsLessThanCount_ShouldReturnLimitedNumberOfCountries: This test checks if the method returns a limited number of countries (according to the pageLimit) when the pageLimit is less than the number of countries.
+
+GetCountriesByPageLimit_WhenPageLimitIsZero_ShouldReturnEmptyList: This test checks if the method returns an empty list when the pageLimit is zero.
+
+You can adapt the test data, page limits, and assertions to your specific requirements. Add more test methods to cover additional scenarios if needed.
+
+Q5:
+Need fix this error:
+Test method GenAIUseCase1.Tests.CountriesTests.GetAllCountries_SuccessfulResponse_ReturnsFilteredCountries threw exception: 
+System.NotSupportedException: Unsupported expression: client => client.GetAsync(It.IsAny<string>(), CancellationToken.None)
+Non-overridable members (here: HttpClient.GetAsync) may not be used in setup / verification expressions.
+    at Moq.Guard.IsOverridable(MethodInfo method, Expression expression) in /_/src/Moq/Guard.cs:line 99
+   at Moq.MethodExpectation..ctor(LambdaExpression expression, MethodInfo method, IReadOnlyList`1 arguments, Boolean exactGenericTypeArguments, Boolean skipMatcherInitialization, Boolean allowNonOverridable) in /_/src/Moq/MethodExpectation.cs:line 236
+   at Moq.ExpressionExtensions.<Split>g__Split|5_0(Expression e, Expression& r, MethodExpectation& p, Boolean assignment, Boolean allowNonOverridableLastProperty) in /_/src/Moq/ExpressionExtensions.cs:line 240
+   at Moq.ExpressionExtensions.Split(LambdaExpression expression, Boolean allowNonOverridableLastProperty) in /_/src/Moq/ExpressionExtensions.cs:line 170
+   at Moq.Mock.SetupRecursive[TSetup](Mock mock, LambdaExpression expression, Func`4 setupLast, Boolean allowNonOverridableLastProperty) in /_/src/Moq/Mock.cs:line 728
+   at Moq.Mock.Setup(Mock mock, LambdaExpression expression, Condition condition) in /_/src/Moq/Mock.cs:line 562
+   at Moq.Mock`1.Setup[TResult](Expression`1 expression) in /_/src/Moq/Mock`1.cs:line 645
+   at GenAIUseCase1.Tests.CountriesTests.GetAllCountries_SuccessfulResponse_ReturnsFilteredCountries()
+   
+A5:
+The error message you're encountering is related to Moq and how it's used to set up expectations on the HttpClient.GetAsync method. The error indicates that you're trying to set up an expectation on a non-overridable method, which is not allowed.
+
+To fix this issue, you can refactor your code to use an interface for HTTP client interactions and then mock that interface instead of HttpClient directly. Here's how you can do it:
+
+First, create an interface for the HTTP client interactions:
+
+csharp
+Copy code
+public interface IHttpClientService
+{
+    Task<HttpResponseMessage> GetAsync(string requestUri, CancellationToken cancellationToken);
+}
+Then, modify your controller to use IHttpClientService:
+
+csharp
+Copy code
+[Route("api/[controller]")]
+[ApiController]
+public class CountriesController : ControllerBase
+{
+    private readonly IHttpClientService _httpClientService;
+    // ... other dependencies ...
+
+    public CountriesController(IHttpClientService httpClientService, /* other dependencies */)
+    {
+        _httpClientService = httpClientService;
+        // ... initialize other dependencies ...
+    }
+
+    // ... other controller actions ...
+}
+Now, you can mock IHttpClientService in your unit tests:
+
+csharp
+Copy code
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Http;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using YourNamespace.Controllers; // Replace with your actual namespace
+
+[TestClass]
+public class CountriesControllerTests
+{
+    private CountriesController _controller;
+    private Mock<IHttpClientService> _httpClientServiceMock;
+
+    [TestInitialize]
+    public void Setup()
+    {
+        _httpClientServiceMock = new Mock<IHttpClientService>();
+        _controller = new CountriesController(_httpClientServiceMock.Object);
+    }
+
+    [TestMethod]
+    public async Task GetAllCountries_SuccessfulResponse_ReturnsFilteredCountries()
+    {
+        // Arrange
+        var countries = new List<Country>
+        {
+            new Country { Name = new Name { Common = "CountryA" }, Population = 1000000 },
+            new Country { Name = new Name { Common = "CountryB" }, Population = 2000000 },
+            new Country { Name = new Name { Common = "CountryC" }, Population = 3000000 },
+        };
+
+        _httpClientServiceMock
+            .Setup(client => client.GetAsync(It.IsAny<string>(), CancellationToken.None))
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(countries)),
+            });
+
+        // Act
+        var response = await _controller.GetAllCountries("Country", 1500000, "ascend", 2) as OkObjectResult;
+        var result = response.Value as List<Country>;
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(2, result.Count);
+        Assert.AreEqual("CountryA", result[0].Name.Common);
+        Assert.AreEqual("CountryB", result[1].Name.Common);
+    }
+
+    // ... other test methods ...
+}
+By using IHttpClientService and mocking it in your tests, you can avoid the issue with non-overridable members like HttpClient.GetAsync.   
