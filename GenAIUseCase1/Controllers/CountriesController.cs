@@ -23,6 +23,15 @@ namespace GenAIUseCase1.Controllers {
 			_countryDataFilter = countryDataFilter;
 		}
 
+		/// <summary>
+		/// Retrieve list of countries from "https://restcountries.com/v3.1/all" using name and population filters. Filters can be partially defined.
+		/// Also result can be sorted or limited for pagination purpose.
+		/// </summary>
+		/// <param name="countryName">Filter by country name</param>
+		/// <param name="countryPopulation">Filter by country population in millions. E.g. 10 means 10 millions. Returns counties which has less population then provided in filter.</param>
+		/// <param name="sortType">Allows to sort results. Allowed values - ascend, descend</param>
+		/// <param name="limit">Allows to limit results, useful for pagination</param>
+		/// <returns>Return list of countries based on provided filters. If no filters/params specified returns all results.</returns>
 		[HttpGet("GetAllCountries")]
 		public async Task<IActionResult> GetAllCountries(string countryName = "", int countryPopulation = 0, string sortType = "", int limit = 0)
 		{
@@ -56,18 +65,18 @@ namespace GenAIUseCase1.Controllers {
 					}
 
 					// apply countries filtering by population
-					if (!string.IsNullOrEmpty(countryName)) {
+					if (countryPopulation != 0) {
 						filteredCountries = _countryDataFilter.GetCountriesByPopulation(filteredCountries, countryPopulation).ToList();
 					}
 
-					// apply page limitation
-					if (!string.IsNullOrEmpty(countryName)) {
-						filteredCountries = _countryDataFilter.GetCountriesByPageLimit(filteredCountries, limit).ToList();
+					// apply sorting
+					if (!string.IsNullOrEmpty(sortType)) {
+						filteredCountries = _countryDataFilter.SortCountriesByName(filteredCountries, sortType).ToList();
 					}
 
-					// apply sorting
-					if (!string.IsNullOrEmpty(countryName)) {
-						filteredCountries = _countryDataFilter.SortCountriesByName(filteredCountries, sortType).ToList();
+					// apply page limitation
+					if (limit != 0) {
+						filteredCountries = _countryDataFilter.GetCountriesByPageLimit(filteredCountries, limit).ToList();
 					}
 				}
 				

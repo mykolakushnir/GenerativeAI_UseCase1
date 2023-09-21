@@ -1,12 +1,11 @@
 ﻿using GenAIUseCase1.Interfaces;
 
 namespace GenAIUseCase1.Services {
-
-	public class HttpClientService : IHttpClientService {
+	internal class HttpClientService : IHttpClientService {
 
 		private readonly IHttpClientFactory _httpClientFactory;
 
-		public HttpClientService(IHttpClientFactory httpClientFactory) {
+		internal HttpClientService(IHttpClientFactory httpClientFactory) {
 			_httpClientFactory = httpClientFactory;
 		}
 
